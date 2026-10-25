@@ -1,0 +1,92 @@
+# Single source of tunable research and deployment parameters. Values are candidates, not locked decisions.
+sampling_rate_hz: 250
+hrv:
+  window_seconds: 300
+  overlap_seconds: 60
+  minimum_valid_contact_seconds: 120
+  include_lf_hf: false
+quality:
+  rolling_seconds: 10
+  min_kurtosis: 2.0
+  max_kurtosis: 20.0
+  min_template_correlation: 0.65
+filter:
+  enabled: true
+  method: lms
+  lms_step_size: 0.01
+  taps: 8
+  minimum_reference_rms: 0.05
+r_peaks:
+  wavelet: db4
+  refractory_ms: 250
+  # DWT detections are confirmed against a prominent QRS-band extremum.
+  qrs_band_hz: [5.0, 20.0]
+  minimum_prominence: 0.04
+  prominence_noise_multiplier: 3.0
+  minimum_rr_ms: 450
+  wavelet_confirmation_ms: 100
+  threshold_mad_multiplier: 3.0
+  allow_pan_tompkins_fallback: true
+  confidence:
+    wavelet_amplitude_weight: 0.50
+    rr_plausibility_weight: 0.30
+    motion_artifact_weight: 0.20
+fusion_strategy: compare_and_flag # priority_only | compare_and_flag | full_fusion
+fusion:
+  strategy: compare_and_flag # priority_only | compare_and_flag | full_fusion
+  primary: steering_wheel
+  secondary: seatbelt
+  max_peak_disagreement_ms: 80
+  max_rr_disagreement_ms: 100
+labeling:
+  strategy: nearest
+  max_alignment_seconds: 300
+modeling:
+  sequence_length_windows: 10
+  ensemble_mode: benchmark_independent
+  random_forest_trees: 300
+validation:
+  independently_referenced_subset_present: false
+  beat_tolerance_ms: 80
+sync:
+  drift_check_interval_seconds: 60
+  drift_detection_threshold_ms: 5
+android:
+  feature_update_seconds: 30
+  inference_seconds: 30
+  alert_threshold: 0.70
+  target_false_positive_tolerance: 0.05
+  clear_threshold: 0.45
+  alert_debounce_count: 3
+  clear_debounce_count: 2
+sensor_geometry: "TBD: steering-wheel and seatbelt electrodes"
+ground_reference_placement: "TBD; logged as session metadata only"
+analog_front_end_model: ADS1293
+acquisition:
+  mcu: ESP32
+  transport: BLE # BLE | Wi-Fi | serial
+  spi_mode: 0
+  data_ready_edge: falling
+  ecg_channel_1_role: steering_wheel
+  ecg_channel_2_role: seatbelt
+  ecg_channel_3_role: unused # optional ECG reference only; never ground/reference electrode
+  share_monotonic_clock_with_imu: true
+synthetic:
+  session_seconds: 180
+  seed: 7
+  waveform_source: ecgsyn_cli # ecgsyn_cli | simple_qrs
+  ecgsyn_executable: /mnt/d/meyin/.tools/ecgsyn/ecgsyn # built from supplied C source with WSL gcc
+  ecgsyn:
+    runtime: wsl
+    wsl_distribution: Ubuntu
+    internal_sampling_hz: 1000
+    hr_mean_bpm: 70
+    hr_std_bpm: 2
+    lf_hf_ratio: 0.5
+    lf_hz: 0.1
+    hf_hz: 0.25
+    lf_std_hz: 0.01
+    hf_std_hz: 0.01
+    fatigue_variability_gain: 1.5
+  seatbelt_amplitude_scale: 0.65
+  seatbelt_clock_drift_ppm: 25

@@ -1,0 +1,5 @@
+data_collection
+labeling
+modeling
+signal_processing
+validation
